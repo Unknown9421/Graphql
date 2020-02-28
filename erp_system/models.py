@@ -95,7 +95,7 @@ class Employee(BaseModel):
             'first_name': self.first_name,
             'last_name': self.last_name,
             'description': self.description,
-            'country': self.country,
+            'country': self.country.name,
             'rank': self.rank,
             'email': self.email,
             'point': self.point

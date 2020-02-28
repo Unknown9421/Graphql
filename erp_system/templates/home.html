@@ -1,21 +1,171 @@
 <!DOCTYPE html>
+{% load i18n static %}
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<title>Django - VueJS</title>
 
+	<script src="https://kit.fontawesome.com/3317577c62.js" crossorigin="anonymous"></script>
+
 	<script type="text/javascript" src="{% static "Vuejs/vue.js" %}"></script>
+	<style>
+		.employees_information {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+
+		table {
+			border-collapse: collapse;
+			border: 2px solid rgb(200, 200, 200);
+			letter-spacing: 1px;
+			font-family: sans-serif;
+			font-size: 1rem;
+		}
+
+		th, td {
+			border: 1px solid rgb(190, 190, 190);
+			padding: 5px 10px 5px 10px;
+			align-items: center;
+			justify-content: center;
+			text-align: center;
+		}
+		th {
+			font-size: 1.2rem;
+			font-weight: bold;
+		}
+
+		#add_point {
+			color: gray;
+		}
+
+		#add_point:hover {
+			color: red;
+			cursor: pointer;
+		}
+
+	</style>
 
 </head>
 <body>
 <h1>Hello</h1>
+<script type="text/javascript">
+	var employees_json = {{ employees_json|safe }}
+</script>
 <div id="vue_app">
+	<ul v-for="employee in employees">
+		<li>
+			Employee: [[ employee.last_name ]] [[ employee.first_name ]]
+		</li>
+		<li>
+			Rank: [[ employee.rank ]]
+		</li>
+		<li>
+			Point: [[ employee.point ]]
+		</li>
+	</ul>
+	<div class="employees_information">
+		<table>
+			<thead>
+			<tr>
+				<th>
+					ID
+				</th>
+				<th>
+					Ranking
+				</th>
+				<th>
+					Last Name
+				</th>
+				<th>
+					First Name
+				</th>
+				<th>
+					Country
+				</th>
+				<th>
+					Description
+				</th>
+				<th>
+					Email
+				</th>
+				<th>
+					Point
+				</th>
+				<th>
+					Add Point
+				</th>
+				<th>
+					Action
+				</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr v-for="(employee, index) in employees" v-bind:key="employee.id">
+				<td>
+					[[ index +1 ]]
+				</td>
+				<td>
+					[[ employee.rank ]]
+				</td>
+				<td>
+					[[ employee.last_name ]]
+				</td>
+				<td>
+					[[ employee.first_name ]]
+				</td>
+				<td>
+					[[ employee.country__name ]]
+				</td>
+				<td>
+					[[ employee.description ]]
+				</td>
+				<td>
+					[[ employee.email ]]
+				</td>
+				<td>
+					[[ employee.point ]]
+				</td>
+				<td>
+					<i id="add_point" v-bind:key="employee.id" @click="add_point_func(index, employee)" class="fas fa-plus-circle fa-2x"></i>
+				</td>
+				<td>
+					<i id="remove_employee" class="fas fa-trash-alt fa-2x"></i>[[ add_point ]]
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
 
 </div>
 <script type="text/javascript">
 	var vue = new Vue ({
-		
+		delimiters: ['[[', ']]'],
+		el: '#vue_app',
+		data: {
+			message: 'Hello Vue!',
+			employees: employees_json,
+			index_data: 0,
+
+		},
+		methods: {
+			add_point_func (index, employee) {
+				console.log(index, employee)
+				employee.point ++
+			}
+		},
+		computed: {
+			add_point: function () {
+				console.log();
+
+			}
+		}
 	})
+</script>
+<script>
+	window.addEventListener('DOMContentLoaded', (event) => {
+		console.log('DOM fully loaded and parsed');
+	});
 </script>
 </body>
 </html>
