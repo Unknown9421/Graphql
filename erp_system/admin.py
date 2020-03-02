@@ -27,5 +27,15 @@ class EmployeeAdmin(admin.ModelAdmin):
     ]
 
 
+class ProjectImageAdmin(admin.ModelAdmin):
+    fieldsets = [
+        ('Image Name',                          {'fields': ['name']}),
+        ('Image',                               {'fields': ['image']}),
+        ('Description',                         {'fields': ['description']}),
+        ('avatar',                              {'fields': ['avatar']}),
+    ]
+
+
 admin.site.register(Country, CountryAdmin)
 admin.site.register(Employee, EmployeeAdmin)
+admin.site.register(ProjectPicture, ProjectImageAdmin)

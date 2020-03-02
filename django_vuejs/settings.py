@@ -17,7 +17,6 @@ from django.utils.translation import ugettext_lazy as _
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
@@ -28,7 +27,6 @@ SECRET_KEY = 'l+a9^f7y+v7hy5-jj-0hb=u+8wi=)@*5=xc##hja@uc0z@gf@t'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -47,6 +45,7 @@ MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -75,7 +74,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'django_vuejs.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
@@ -85,7 +83,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -105,7 +102,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
@@ -115,6 +111,8 @@ LANGUAGES = (
     ('vi', _('VietNam')),
     ('en', _('English')),
 )
+
+LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'),)
 
 TIME_ZONE = 'Asia/Ho_Chi_Minh'
 
@@ -128,24 +126,21 @@ USE_TZ = True
 
 DATE_FORMAT = 'd/m/Y'
 DATE_INPUT_FORMATS = (
-    '%d/%m/%Y', '%d/%m/%Y', '%d/%m/%y',     # '2006-10-25', '10/25/2006', '10/25/06'
-    '%b %d %Y', '%b %d, %Y',                # 'Oct 25 2006', 'Oct 25, 2006'
-    '%d %b %Y', '%d %b, %Y',                # '25 Oct 2006', '25 Oct, 2006'
-    '%B %d %Y', '%B %d, %Y',                # 'October 25 2006', 'October 25, 2006'
-    '%d %B %Y', '%d %B, %Y',                # '25 October 2006', '25 October, 2006'
+    '%d/%m/%Y', '%d/%m/%Y', '%d/%m/%y',  # '2006-10-25', '10/25/2006', '10/25/06'
+    '%b %d %Y', '%b %d, %Y',  # 'Oct 25 2006', 'Oct 25, 2006'
+    '%d %b %Y', '%d %b, %Y',  # '25 Oct 2006', '25 Oct, 2006'
+    '%B %d %Y', '%B %d, %Y',  # 'October 25 2006', 'October 25, 2006'
+    '%d %B %Y', '%d %B, %Y',  # '25 October 2006', '25 October, 2006'
 )
 
 DATETIME_FORMAT = 'd/m/Y H:i:s'
 DATETIME_INPUT_FORMATS = (
-    '%d/%m/%Y %H:%M:%S',     # '2006-10-25 14:30:59'
+    '%d/%m/%Y %H:%M:%S',  # '2006-10-25 14:30:59'
     '%d/%m/%Y %H:%M:%S.%f',  # '2006-10-25 14:30:59.000200'
-    '%d/%m/%Y %H:%M',        # '2006-10-25 14:30'
+    '%d/%m/%Y %H:%M',  # '2006-10-25 14:30'
 )
 
 YEAR_MONTH_FORMAT = '%b/%Y'
-
-
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
@@ -153,3 +148,5 @@ YEAR_MONTH_FORMAT = '%b/%Y'
 STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

@@ -5,6 +5,8 @@
 	<meta charset="UTF-8">
 	<title>Django - VueJS</title>
 
+	<link href="https://fonts.googleapis.com/css?family=Trade+Winds&display=swap" rel="stylesheet">
+
 	<script src="https://kit.fontawesome.com/3317577c62.js" crossorigin="anonymous"></script>
 
 	<script type="text/javascript" src="{% static "Vuejs/vue.js" %}"></script>
@@ -21,6 +23,11 @@
 			letter-spacing: 1px;
 			font-family: sans-serif;
 			font-size: 1rem;
+		}
+
+		thead {
+			background-color: #3f87a6;
+			color: #fff;
 		}
 
 		th, td {
@@ -44,15 +51,58 @@
 			cursor: pointer;
 		}
 
+		.description_editor {
+			overflow: auto;
+			border-radius: 5px;
+			border: 2px solid black;
+			{#width: 500px;#}
+			padding: 10px;
+			background-color: #fff;
+			color: #000;
+			max-height: 100px;
+			text-align: left;
+		}
+
+		.description_editor:empty:before {
+			content: attr(data-status);
+			color: #aaaaaa;
+		}
+
+		.description_editor:hover {
+			cursor: auto;
+		}
+
+		.description_editor:focus {
+			outline: none;
+			cursor: auto;
+		}
+
+		.description_editor:focus-within {
+			box-shadow: 0 0 0 2px rgb(61, 98, 157);
+			border: none;
+		}
+
+		.filter_rank {
+
+		}
+
+		.filter_rank:hover {
+			color: #4f4f4f;
+			cursor: pointer;
+		}
+
 	</style>
 
 </head>
 <body>
-<h1>Hello</h1>
+<div style="text-align: center; color: rgb(28, 119, 73)">
+	<h1>WORKING WITH DJANGO FRAMEWORK - VUEJS (LIBRARY)</h1>
+</div>
 <script type="text/javascript">
 	var employees_json = {{ employees_json|safe }}
 </script>
 <div id="vue_app">
+	{% trans 'Xin Chào' %} - {% trans 'Vui Lòng Điền Vào' %} - {% trans 'Please Written Description' %}
 	<ul v-for="employee in employees">
 		<li>
 			Employee: [[ employee.last_name ]] [[ employee.first_name ]]
@@ -63,50 +113,57 @@
 		<li>
 			Point: [[ employee.point ]]
 		</li>
+		<li>
+			Description: [[ employee.description ]]
+		</li>
 	</ul>
 	<div class="employees_information">
 		<table>
+			<caption style="margin: 5px; font-weight: bold; font-size: 2rem;"><span style="color: cornflowerblue;">Employee Information - </span><span style="color: crimson;">2020</span></caption>
 			<thead>
 			<tr>
 				<th>
-					ID
+					{% trans 'ID' %}
 				</th>
 				<th>
-					Ranking
+					{% trans 'Ranking' %} - <span id="point_filter" class="filter_rank"><i class="fas fa-filter">({% trans 'Filter' %})</i></span>
 				</th>
 				<th>
-					Last Name
+					{% trans 'Last Name' %}
 				</th>
 				<th>
-					First Name
+					{% trans 'First Name' %}
 				</th>
 				<th>
-					Country
+					{% trans 'Country' %}
 				</th>
 				<th>
-					Description
+					{% trans 'Description' %}
 				</th>
 				<th>
-					Email
+					{% trans 'Write Description' %}
 				</th>
 				<th>
-					Point
+					{% trans "Email" %}
 				</th>
 				<th>
-					Add Point
+					{% trans 'Point' %}
 				</th>
 				<th>
-					Action
+					{% trans 'Add Point' %}
+				</th>
+				<th>
+					{% trans 'Action' %}
 				</th>
 			</tr>
 			</thead>
 			<tbody>
-			<tr v-for="(employee, index) in employees" v-bind:key="employee.id">
+			<tr v-for="(employee, index) in sort_point_employees_computed" v-bind:key="employee.id">
 				<td>
 					[[ index +1 ]]
 				</td>
-				<td>
-					[[ employee.rank ]]
+				<td style="font-family: 'Trade Winds'; font-weight: 700;" v-html="ranking_cup_func(index, employee)">
+
 				</td>
 				<td>
 					[[ employee.last_name ]]
@@ -121,24 +178,29 @@
 					[[ employee.description ]]
 				</td>
 				<td>
+					<div @keyup="writing_description_func(employee)" id="description_editor" contenteditable="true"
+					     class="description_editor" data-status="{% trans 'Please Written Description' %}">
+					</div>
+				</td>
+				<td>
 					[[ employee.email ]]
 				</td>
 				<td>
-					[[ employee.point ]]
+					<p>[[ employee.point ]] <i class="fas fa-star" style="color: crimson;"></i></p>
 				</td>
 				<td>
-					<i id="add_point" v-bind:key="employee.id" @click="add_point_func(index, employee)" class="fas fa-plus-circle fa-2x"></i>
+					<i id="add_point" v-bind:key="employee.id" @click="add_point_func(employee)" class="fas fa-plus-circle fa-2x"></i>
 				</td>
 				<td>
-					<i id="remove_employee" class="fas fa-trash-alt fa-2x"></i>[[ add_point ]]
+					<i id="remove_employee" class="fas fa-trash-alt fa-2x"></i>
 				</td>
 			</tr>
 			</tbody>
 		</table>
 	</div>
-
 </div>
 <script type="text/javascript">
+
 	var vue = new Vue ({
 		delimiters: ['[[', ']]'],
 		el: '#vue_app',
@@ -146,18 +208,55 @@
 			message: 'Hello Vue!',
 			employees: employees_json,
 			index_data: 0,
-
+			writing_description: 'hello - fuckyou',
 		},
 		methods: {
-			add_point_func (index, employee) {
+
+			ranking_cup_func: function (index, employee) {
+				let cup = ``;
+
 				console.log(index, employee)
-				employee.point ++
+				if (index === 0) {
+					cup = `<span>${ employee.rank }</span> - <i style="color: rgb(255,223,0);" class="fas fa-trophy"></i>`
+				} else if (index === 1) {
+					cup = `<span>${ employee.rank }</span> - <i style="color: rgb(192,192,192);" class="fas fa-trophy"></i>`
+				} else if (index === 2) {
+					cup = `<span>${ employee.rank }</span> - <i style="color: rgb(165,42,42);" class="fas fa-trophy"></i>`
+				} else {
+					cup = `<span>${ employee.rank }</span>`
+				}
+				return cup
+			},
+
+			add_point_func (employee) {
+				console.log('Running Add Point Function')
+				employee.point = employee.point + 100
+			},
+
+			writing_description_func (employee) {
+				console.log('Writing Description Running');
+				employee.description = event.target.textContent
 			}
 		},
-		computed: {
-			add_point: function () {
-				console.log();
 
+		filters: {
+			ranking_setting_color_filter: function (employee) {
+				console.log(employee.index)
+				return employee.rank
+			}
+		},
+
+		computed: {
+
+
+			sort_point_employees_computed: function () {
+				return this.employees.sort(function (a, b) {
+					if (a.point < b.point) {
+						return 1
+					} else {
+						return -1
+					}
+				})
 			}
 		}
 	})

@@ -14,8 +14,7 @@ def home(request):
     context['employees'] = Employee.objects.all()
     context['employees_json'] = json.dumps(list(Employee.objects.all().values('id', 'first_name', 'last_name', 'description', 'email',
                                              'country__name', 'rank', 'point')))
-    print(list(Employee.objects.all().values('id', 'first_name', 'last_name', 'description', 'email',
-                                             'country__name', 'rank', 'point')))
+
 
 
     return render(request, 'home.html', context)
@@ -28,11 +27,11 @@ def view_api(request, model_name):
     result_data = []
     data = {}
     data['status'] = True
-    if request.method == 'POST':
+    if request.method == 'GET':
         for query in apps.get_app_config('erp_system').get_model(model_name).objects.all():
             result_data.append(query.dictionary_parse)
         data['context'] = json.dumps(result_data)
-        print(data['context'])
+        # print(data['context'])
     else:
         data['status'] = False
     return JsonResponse(data)
